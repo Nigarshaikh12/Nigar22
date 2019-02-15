@@ -1,0 +1,589 @@
+
+SQL> select * from product where stock<10;
+
+no rows selected
+
+SQL> select * from product where price>500;
+
+   PROD_ID PROD_NAME                 PRICE      STOCK LAUNCH_DA     CAT_ID
+---------- -------------------- ---------- ---------- --------- ----------
+      1001 ZARA                      78000         80 05-FEB-19        104
+      1002 BlueBerry                  7000         50 05-FEB-19        104
+      1003 LTI                       80000         10 05-FEB-19        101
+      1004 IBM                       50000         56 05-FEB-19        101
+      1005 IndianFood                45000         60 05-FEB-19        103
+      1006 ItalianFood                4000         60 05-FEB-19        103
+      1007 Mobile                    89000         20 05-FEB-19        102
+      1008 Laptop                     8000         29 05-FEB-19        102
+
+8 rows selected.
+
+SQL> select * from product where cat_id=102
+  2  ;
+
+   PROD_ID PROD_NAME                 PRICE      STOCK LAUNCH_DA     CAT_ID
+---------- -------------------- ---------- ---------- --------- ----------
+      1007 Mobile                    89000         20 05-FEB-19        102
+      1008 Laptop                     8000         29 05-FEB-19        102
+
+SQL>  select * from product where price>(select AVG(price) from product);
+
+   PROD_ID PROD_NAME                 PRICE      STOCK LAUNCH_DA     CAT_ID
+---------- -------------------- ---------- ---------- --------- ----------
+      1001 ZARA                      78000         80 05-FEB-19        104
+      1003 LTI                       80000         10 05-FEB-19        101
+      1004 IBM                       50000         56 05-FEB-19        101
+      1007 Mobile                    89000         20 05-FEB-19        102
+
+
+
+SQL> select cat_name from categoryy;
+
+CAT_NAME
+----------
+Company
+Electronic
+Food
+Clothes
+
+SQL> select c.cat_name,p.prod_name from categoryy c,product p;
+
+CAT_NAME   PROD_NAME
+---------- --------------------
+Company    ZARA
+Company    BlueBerry
+Company    LTI
+Company    IBM
+Company    IndianFood
+Company    ItalianFood
+Company    Mobile
+Company    Laptop
+Electronic ZARA
+Electronic BlueBerry
+Electronic LTI
+Electronic IBM
+Electronic IndianFood
+Electronic ItalianFood
+Electronic Mobile
+Electronic Laptop
+Food       ZARA
+Food       BlueBerry
+Food       LTI
+Food       IBM
+Food       IndianFood
+Food       ItalianFood
+Food       Mobile
+Food       Laptop
+Clothes    ZARA
+Clothes    BlueBerry
+Clothes    LTI
+Clothes    IBM
+Clothes    IndianFood
+Clothes    ItalianFood
+Clothes    Mobile
+Clothes    Laptop
+
+32 rows selected.
+
+SQL> select min(price) ,max(price),avg(price) from product;
+
+MIN(PRICE) MAX(PRICE) AVG(PRICE)
+---------- ---------- ----------
+      4000      89000      45125
+
+
+SQL> select cat_id,min(price),max(price),avg(price) from product group by cat_id;
+
+    CAT_ID MIN(PRICE) MAX(PRICE) AVG(PRICE)
+---------- ---------- ---------- ----------
+       102       4000       9000       6500
+       101      78000      88000      83000
+       104       8000      98000      53000
+       103       4700       6700       5700
+
+SQL> select prod_id,launch_date,TO_CHAR(launch_date,'ddth-mon-yyyy') from product;
+
+   PROD_ID LAUNCH_DA TO_CHAR(LAUNC
+---------- --------- -------------
+      1001 06-FEB-19 06th-feb-2019
+      1002 06-FEB-19 06th-feb-2019
+      1003 06-FEB-19 06th-feb-2019
+      1004 06-FEB-19 06th-feb-2019
+      1005 06-FEB-19 06th-feb-2019
+      1006 06-FEB-19 06th-feb-2019
+      1007 06-FEB-19 06th-feb-2019
+      1008 06-FEB-19 06th-feb-2019
+
+8 rows selected.
+
+
+SQL> select price,price-((0.10)*price) as Discount_Price from product;
+
+     PRICE DISCOUNT_PRICE
+---------- --------------
+     78000          70200
+     88000          79200
+      8000           7200
+     98000          88200
+      6700           6030
+      4700           4230
+      4000           3600
+      9000           8100
+
+
+
+
+SQL> select price,price-(0.5*price) from product where cat_id=103;
+
+     PRICE PRICE-(0.5*PRICE)
+---------- -----------------
+      6700              3350
+      4700              2350
+
+___________PL/SQL________________
+
+set serveroutput on
+declare myname varchar2(20)
+begin
+dbms_output.put_line('My name is: ' || myname);
+myname := 'John';
+dbms_output.put_line('My name is : ' || myname);
+end;
+/
+
+
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  declare
+  2  event varchar2(15);
+  3  begin
+  4  event :=q'!my father's day!';
+  5  dbms_output.put_line('3rd sunday is june is:'||event);
+  6  event:=q'[mother's day]';
+  7  dbms_output.put_line('2nd sun is may is:'||event);
+  8* end;
+SQL> /
+3rd sunday is june is:my father's day
+2nd sun is may is:mother's day
+
+PL/SQL procedure successfully completed.
+
+
+
+
+SQL> declare
+  2  pname varchar2(30);
+  3  begin
+  4  select prod_name into pname
+  5  from product
+  6  where prod_id=1001;
+  7  dbms_output.put_line('Product:'||pname);
+  8  end;
+  9  /
+Product:LTI
+
+PL/SQL procedure successfully completed.
+
+
+SQL> variable pri number
+SQL> begin
+  2  select price into:pri
+  3  from product where prod_id=1004;
+  4  end;
+  5  /
+
+PL/SQL procedure successfully completed.
+
+SQL> print pri
+
+       PRI
+----------
+     98000
+
+SQL> select prod_name from product where price =:pri;
+
+PROD_NAME
+--------------------
+FBB
+
+SQL>
+
+
+SQL> variable pri number
+SQL> set autoprint on
+SQL> begin
+  2  select price into : pri
+  3  from product where prod_id=1003;
+  4  end;
+  5  /
+begin
+*
+ERROR at line 1:
+ORA-06550: line 0, column 0:
+PLS-00801: internal error [ph2csql_strdef_to_diana:bind]
+ORA-06550: line 3, column 6:
+PL/SQL: ORA-06544: PL/SQL: internal error, arguments:
+[ph2csql_strdef_to_diana:bind], [], [], [], [], [], [], []
+ORA-06550: line 2, column 1:
+PL/SQL: SQL Statement ignored
+
+
+
+       PRI
+----------
+
+
+SQL> ed
+Wrote file afiedt.buf
+
+  1  begin
+  2  select price into :pri
+  3  from product where prod_id=1005;
+  4* end;
+SQL> /
+
+PL/SQL procedure successfully completed.
+
+
+       PRI
+----------
+      6700
+
+
+
+
+
+
+
+
+
+SQL> variable rowS_deleted varchar2(30)
+SQL> declare
+  2  empno employees.employee_id%type :=178;
+  3  begin
+  4  delete from employees
+  5  where employee_id=empno;
+  6  :rows_deleted:=(SQL%ROWCOUNT || ' row deleted');
+  7  end;
+  8  /
+
+PL/SQL procedure successfully completed.
+
+
+ROWS_DELETED
+--------------------------------
+1 row deleted
+
+SQL> print rows_deleted;
+
+ROWS_DELETED
+--------------------------------
+1 row deleted
+
+
+
+  1  declare
+  2  myage number :=31;
+  3  begin if myage<11
+  4  then
+  5  dbms_output.put_line('i am child');
+  6  elsif myage < 20
+  7  then
+  8  dbms_output.put_line('i am young');
+  9  elsif myage < 30
+ 10  then
+ 11  dbms_output.put_line('i am in my 20s');
+ 12  elsif myage < 40
+ 13  then
+ 14  dbms_output.put_line('i am in my 30s');
+ 15  else
+ 16  dbms_output.put_line('i am always young');
+ 17  end if ;
+ 18* end;
+SQL> /
+
+PL/SQL procedure successfully completed.
+
+
+
+  
+  1  declare
+  2  grade char(2):=upper('&grade');
+  3  appraisal varchar2(20);
+  4  begin
+  5  appraisal :=
+  6  case grade
+  7  when 'A' then 'excellent'
+  8  when 'B' then 'very good'
+  9  when 'C' then 'good'
+ 10  else 'no such grade'
+ 11  end;
+ 12  dbms_output.put_line('grade: '|| grade || ' appraisal ' || appraisal);
+ 13* end;
+SQL> /
+Enter value for grade: A
+grade: A  appraisal excellent
+
+PL/SQL procedure successfully completed.
+
+
+ declare
+  2  countryid locations.country_id%type :='CA';
+  3  loc_id locations.location_id%type;
+   4  counter number(2):=1;
+  5  new_city locations.city%type:='Montreal';
+  6  begin
+  7  select max(location_id) into loc_id from locations
+  8  where country_id = countryid;
+  9  loop
+ 10  insert into locations(location_id,city,country_id) values ((loc_id+counter),new_city,countryid);
+ 11  counter:= counter+1;
+ 12  exit when counter>3;
+ 13  end loop;
+ 14* end;
+SQL> /
+
+PL/SQL procedure successfully completed.
+  1  declare
+  2  counter number(2):=0;
+  3  begin
+  4  loop
+  5  dbms_output.put_line('cistomer value='|| counter);
+  6  counter:=counter+1;
+  7  exit when counter >5;
+  8  end loop;
+  9* end;
+SQL> /
+cistomer value=0
+cistomer value=1
+cistomer value=2
+cistomer value=3
+cistomer value=4
+cistomer value=5
+
+PL/SQL procedure successfully completed.
+
+
+
+SP2-0735: unknown SET option beginning "serverpoin..."
+SQL> set serveroutput on
+SQL> declare
+  2  cursor emp_cursor is
+  3  select first_name,last_name from employees
+  4  where department_id=30;
+  5  fname employees.first_name%type;
+  6  lname employees.last_name%type;
+  7  begin
+  8  open emp_cursor;
+  9  loop
+ 10  fetch emp_cursor into fname,lname;
+ 11  exit when emp_cursor%notfound;
+ 12  dbms_output.put_line(fname || ' '||lname);
+ 13  end loop;
+ 14  close emp_cursor;
+ 15  end;
+ 16  /
+Den Raphaely
+Alexander Khoo
+Shelli Baida
+Sigal Tobias
+Guy Himuro
+Karen Colmenares
+
+PL/SQL procedure successfully completed.
+
+
+
+  1  declare
+  2  cursor emp_cursor is
+  3  select employee_id,last_name from employees
+  4  where department_id = 30;
+  5  emp_record emp_cursor%rowtype;
+  6  begin
+  7  open emp_cursor;
+  8  loop
+  9  fetch emp_cursor into emp_record;
+ 10  exit when emp_cursor%notfound;
+ 11  dbms_output.put_line(emp_record.employee_id || ' '|| emp_record.last_name);
+ 12  end loop;
+ 13  close emp_cursor;
+ 14* end;
+SQL> /
+114 Raphaely
+115 Khoo
+116 Baida
+117 Tobias
+118 Himuro
+119 Colmenares
+
+PL/SQL procedure successfully completed.
+
+
+
+
+  1  begin
+  2  for emp_record IN(select employee_id,last_name
+  3  from employees where department_id=30)
+  4  loop
+  5  dbms_output.put_line(emp_record.employee_id || ' '|| emp_record.last_name);
+  6  end loop;
+  7* end;
+SQL> /
+114 Raphaely
+115 Khoo
+116 Baida
+117 Tobias
+118 Himuro
+119 Colmenares
+
+PL/SQL procedure successfully completed.
+
+
+SQL> select p.price,p.prod_name,c.cat_id,c.cat_name from categoryy c inner join product p on c.cat_id=p.cat_id;
+
+     PRICE PROD_NAME                CAT_ID CAT_NAME
+---------- -------------------- ---------- ----------
+     78000 LTI                         101 Company
+     88000 TCS                         101 Company
+      8000 ZARA                        104 Clothes
+     98000 FBB                         104 Clothes
+      6700 Mobile                      103 Electronic
+      4700 Laptop                      103 Electronic
+      4000 Italian Food                102 Food
+      9000 Indian Food                 102 Food
+
+8 rows selected.
+
+
+
+_________________________________________________________________________
+
+
+SQL> connect hr
+Enter password:
+Connected.
+SQL> set serveroutput on
+SQL> declare
+  2  lname varchar2(50);
+  3  begin
+  4  select last_name into lname from employees where first_name ='John';
+  5  dbms_output.put_line('John''s last name is:'||lname);
+  6  exception
+  7  when TOO_MANY_ROWS then
+  8  dbms_output.put_line('Exception caught');
+  9  end;
+ 10  /
+Exception caught
+
+PL/SQL procedure successfully completed.
+
+
+
+
+SQL> insert into product(prod_id,prod_name) values(1002,NULL);
+insert into product(prod_id,prod_name) values(1002,NULL)
+                                                   *
+ERROR at line 1:
+ORA-01400: cannot insert NULL into ("NP3022"."PRODUCT"."PROD_NAME")
+
+
+
+___________________________________________________________________
+
+PROCEDURE
+
+
+  1  create procedure proc1234(pid number,percent number)
+  2  is
+  3  begin
+  4  dbms_output.put_line('Product id is' || pid || 'Percent is' || percent);
+  5* end;
+SQL> /
+
+Procedure created.
+
+SQL> execute proc123(105,75);
+
+PL/SQL procedure successfully completed.
+
+
+create procedure query_emp(id IN employees.employee_id%type,name out employees.last_name%type,salary out employees.salary%type) is
+begin
+select last_name,salary into name,salary from employes where employee_id=id;
+end query_emp;
+
+
+declare
+emp_name employees.last_name%type;
+emp_sal employees.salary%type;
+begin
+query_emp(171,emp_name,emp_sal);
+dbms_output.put_line('Emp Name is ' || emp_name);
+dbms_output.put_line('Emp salary is ' || emp_sal);
+end;
+/
+
+
+
+
+
+
+declare 
+phone_no varchar2(20) := '1234567894';
+begin
+ffffformat_phone(phone_no);
+dbms_output.put_line(phone_no);
+end;
+
+
+
+
+
+  1  create function gget_salary
+  2  (id employees.employee_id%type) return number is
+  3  sal employees.salary%type := 0;
+  4  begin
+  5     select salary
+  6     into sal
+  7     from employees
+  8     where employee_id=id;
+  9     return sal;
+ 10* end gget_salary;
+SQL> /
+
+Function created.
+
+SQL> select gget_salary(101) from dual;
+
+GGET_SALARY(101)
+----------------
+           17000
+
+declare
+phone_no varchar2(20) := '1234567894';begin
+ ffffformat_phone(phone_no);
+ dbms_output.put_line(phone_no);
+ end;
+  /
+
+
+
+       17000
+
+SQL> declare
+  2  phone_no varchar2(20) := '1234567894';begin
+  3   ffffformat_phone(phone_no);
+  4   dbms_output.put_line(phone_no);
+  5   end;
+  6    /
+
+PL/SQL procedure successfully completed.
+
+SQL> set serveroutput on
+SQL> /
+(123)456-7894
+
+PL/SQL procedure successfully completed.
